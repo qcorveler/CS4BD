@@ -64,8 +64,22 @@ class Recursion:
         - input: [1, 2, 3]
         - output: [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
         """
-        # your code
-        return []
+        res=[]
+        # base case
+        if not _numbers :
+            return res
+        if _numbers == [1] :
+            return [1]
+        if _numbers == [1,2] :
+            return [[1,2], [2,1]]
+        
+        last_number = _numbers[-1]
+        reduced = _numbers[:-1]
+        permut_reduced = self.perm(reduced)
+        for arrangement in permut_reduced :
+            for i in range(len(arrangement)+1):
+                res.append(arrangement[:i] + [last_number] + arrangement[i:])
+        return res
 
 
     def pset(self, _numbers) -> list:
@@ -74,8 +88,20 @@ class Recursion:
         - input: [1, 2, 3]
         - output: powerset, [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
         """
-        # your code
-        return []
+        if _numbers == [] :
+            return []
+        if _numbers == [1] :
+            return [[], [1]]
+        if _numbers == [1,2]:
+            return [[], [1], [2], [1,2]]
+        
+        last_number = _numbers[-1]
+        reduced = _numbers[:-1]
+        pset_reduced = self.pset(reduced)
+        res = pset_reduced.copy()
+        for set in pset_reduced:
+            res.append(set + [last_number])
+        return res
 
 
     def find(self, _numbers, match_func) -> list:
@@ -123,8 +149,8 @@ class Recursion:
         2,      # Challenge 2, Fibonacci numbers
         21,     # Challenge 2.1, fig_gen()
         22,     # Challenge 2.2, memoization, fib(60), fib(90)
-        # 3,      # Challenge 3, Permutation
-        # 4,      # Challenge 4, Powerset
+        3,      # Challenge 3, Permutation
+        4,      # Challenge 4, Powerset
         # 5,      # Challenge 5, Finding matches, find()
         # 51,     # Challenge 5.1, find_adjacent() pairs
         # 52,     # Challenge 5.2, find_pairs() that add to n
