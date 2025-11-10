@@ -17,18 +17,31 @@ class Recursion:
             3. Invoke `sum(r)` recursively on the remaining list.
             4. Combine the result for the sub-problem with the first number `n1`: `return n1 + sum(r)`.
         """
-        # your code
+        if _numbers :
+            return _numbers[0] + self.sum(_numbers[1:])
         return 0
 
 
-    def fib(self, _n, memo=None) -> int:
+    def fib(self, _n, memo={}) -> int:
         """
         Return value of n-th Fibonacci number.
         - input: n=8
         - output: 21
         """
-        # your code
-        return 0
+
+        # base case
+        if _n <= 0:
+            return 0
+        elif _n == 1:
+            return 1
+        
+        if _n in memo:
+            return memo[_n]
+        
+        memo[_n] = self.fib(_n - 1, memo) + self.fib(_n - 2, memo)
+
+
+        return memo[_n]
 
 
     def fib_gen(self, _n):
@@ -40,8 +53,9 @@ class Recursion:
             ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
              [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987])
         """
-        # your code
-        yield ([], [])
+        n_values = list(range(_n + 1))
+        fib_values = [self.fib(i) for i in n_values]
+        yield (n_values, fib_values)
 
 
     def perm(self, _numbers) -> list:
@@ -107,8 +121,8 @@ class Recursion:
     run_choices = [
         1,      # Challenge 1, Simple recursion: sum numbers
         2,      # Challenge 2, Fibonacci numbers
-        # 21,     # Challenge 2.1, fig_gen()
-        # 22,     # Challenge 2.2, memoization, fib(60), fib(90)
+        21,     # Challenge 2.1, fig_gen()
+        22,     # Challenge 2.2, memoization, fib(60), fib(90)
         # 3,      # Challenge 3, Permutation
         # 4,      # Challenge 4, Powerset
         # 5,      # Challenge 5, Finding matches, find()
