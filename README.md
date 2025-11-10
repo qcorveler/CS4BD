@@ -1,589 +1,485 @@
-This project was developped by Quentin Corveler for the course Computer Science for Big Data, following the instructions in this README file.
+# Assignment D: Recursive Problem Solving &nbsp; (15 Pts + 4 Extra Pts)
 
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- Solution of Assignment A2 (CS4BD)
--->
-## Solution A2: Creating a *Python*-Project
+Recursion is not just a *"function calling itself"*, it is a way of thinking
+about a class of problems that can be split into simple "*base cases"* and
+remaining *"sub-problems"* that are *"self-similar"*.
 
+A *"sub-problem"* is self-similar when it exactly looks the same as the
+original problem, just smaller (e.g. reduced by one element). At some point,
+the simple "*base case"* has been reached that yields a primitive solution.
 
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-The assignment shows good practices how to create and structure a *Python*
-project. Few rules should be followed when creating a new software development.
-They generally apply, regardless of the programming language:
+A recursive *solution function* exploiting self-similarity has two phases:
 
-- source code resides in the `src` directory (sub-tree) in the project
-    directory.
+  1. *Reduction:* - slicing the problem (e.g. a list of numbers) into one
+        element (e.g. the first number) and a remaining *sub-problem*
+        (e.g. the list of remaining numbers).
 
-- test code (unit tests) is always separated from the source code and typically
-    resides in a `tests` directory (sub-tree).
+  1. *Recursion:* -  invoke the same function for the *sub-problem*
+        until the *sub-problem* has been reduced to the *base case*.
+        Return the solution for the *base case*.
 
-- each, `src` and `tests`, have sub-directories to further structure the source
-    code. The structure underneath `tests` mirrors the structure under `src`.
+  1. *Construction:* - results of recursive invocations are considered
+        as solutions of *sub-problems* and are combined with the element
+        that was isolated at the particular level of recursion.
 
-- only source code is under code management (e.g. *git*), no built artifacts,
-    tools or binaries.
-
-- a *build-process* must be defined and communicated in a project such that
-    the project can be *"built"* any time from scratch.
-
-*Python* does not assume or enforces (unlike Java/maven) any structure of a
-software development project.
-
-Read article by Ken Reitz:
-[*"Structuring Your Project"*](https://docs.python-guide.org/writing/structure)
-to learn about *best-practices* that should be followed in *Python* according to
-Ken Reitz (obviously, this particular approach can be debated, but it is quite
-common).
-
----
-
-Goal of this assignment is to set-up a new *Python* project following the guidance
-from the article.
-The project will create two components, a *"Calculator"* with methods:
-
-- *add(a, b)* - return the sum of *a* and *b*, 
-
-- *sub(a, b)* - subtract *b* from *a*,
-
-- *mul(a, b)* - multiply *a* and *b*,
-
-- *div(a, b)* - divide *a* by *b*,
-
-- *factorize( n )* - return prime factors of *n*.
-
-*"Calculator"* is a singleton component.
+While this approach is elegant from a thinking-about-problems and programming
+point of view, it has cost associated for using the
+[Callstack](https://en.wikipedia.org/wiki/Call_stack)
+using a data structure of an abstract data type
+[Stack](https://en.wikipedia.org/wiki/Stack_(abstract_data_type))
+for recursions.
 
 
-*"Collection"* provides *list* and *set* methods:
+### Challenges
+- [Challenge 1:](#1-challenge-simple-recursion-sum-numbers) Simple recursion: *sum* numbers
+- [Challenge 2:](#2-challenge-fibonacci-numbers) Fibonacci numbers
+- [Challenge 3:](#3-challenge-permutation) Permutation
+- [Challenge 4:](#4-challenge-powerset) Powerset
+- [Challenge 5:](#5-challenge-find-matching-pairs) Find Matching Pairs
+- [Challenge 6:](#6-challenge-combinatorial-problem-of-finding-numbers) Combinatorial Problem of Finding Numbers
+- [Challenge 7:](#7-challenge-hard-problem-of-finding-numbers) Hard Problem of Finding Numbers
 
-- *contains( s, e )* - calculate the number of times element *e* is in *s*,
+Points: [2, 1, 2, 2, 2, 3, 2, +4 extra pts]
 
-- *zip(s, p)* - pair consequitive elements from *s* and *p*,
+File [recursion.py](recursion.py) has function headers defined for each challenge.
 
-- *pset( s )* - calculate the powerset of *s*,
+Use those functions and complete code.
 
-- *perm( p )* - calculate permutations of *p*,
-
-*"Collection"* is an instantiatable component.
-
-
----
-Steps:
-
-1. Step: [*Answer Questions for Python Project-Setup*](#1-answer-questions-for-python-project-setup).
-
-1. Step: [*Create project: "py-fun"*](#2-create-project-py-fun).
-
-1. Step: [*Build the Project*](#3-build-the-project).
-
-1. Step: [*Create the Calculator*](#4-create-the-calculator).
-
-1. Step: [*Run the Calculator*](#5-run-the-calculator).
-
-1. Step: [*Extend the Calculator*](#6-extend-the-calculator).
-
-1. Step: [*Check Project into Local git Repository*](#7-check-project-into-local-git-repository).
-
-1. Step: [*Push Project to Remote *git* Repository*](#8-push-project-to-remote-git-repository).
-
-1. Step: [*Unit Tests*](#9-unit-tests).
-<!-- 
-1. Step: [*Release*](#10-release).
-    - build distributable package, actually release 'make build'
--->
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 &nbsp;
----
-### 1. Answer Questions for *Python* Project-Setup
+### 1.) Challenge: Simple recursion: *sum()* numbers
 
-1. What is the *project scaffold*?
+Computing the *sum* of numbers is most often performed *iteratively* as a loop
+over given numbers and adding them in a result variable.
 
-1. What is a software *build process*?
+Solving the problem *recursively* illustrates the concept of self-similarity
+and recursive problem solving.
 
-1. When does the software *build process* start and when does it end?
+Use the following approach:
 
-1. What are steps and what is the result of the software *build process*?
+  1. *Reduction:* - split the given list of numbers into a first element (first number)
+        and a list of remaining numbers (*sub-problem*). Remember the first element.
 
-1. What is *make*?
+  1. *Recursion:* - invoke *sum()* for the list of remaining numbers until the base case
+        has been reached: *sum( [ ] ) = 0* or *sum( [n] )=n*.
 
-1. What is the purpose of file *requirements.txt*? How is it used?
+  1. *Construction:* - add the remembered element to the value returned from the
+        recursive invocation of *sum()*.
 
-1. What is a *Build Server*? What does it mean for *Python*?
-
-1. What are *Nightly Builds*?
-
-1. What are the differences between
-    [*"Scripts, Modules, Packages, and Libraries"*](https://realpython.com/videos/scripts-modules-packages-and-libraries)
-    in *Python*?
-
-1. What is *_ _ _init_ _ _.py* meant to be used for?
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 2. Create Project: "py-fun"
-
-Find a proper workspace (directory) on your laptop to host the new project:
-
-```sh
-# cd to the directory where you store your Python projects
-cd <path-to-workspace>
-
-mkdir py-fun                    # create the new project 'py-fun'
-
-cd py-fun                       # cd into the new project
-
-mkdir -p src/calculator             # make the directory for the 'Calculator'
-mkdir -p tests/calculator           # make directory for 'Calculator' tests
-
-url="https://raw.githubusercontent.com/sgra64/py-fun/refs/heads/main"
-curl -o makefile $url/makefile          # fetch 'makefile' from URL
-curl -o requirements.txt $url/requirements.txt
-curl -o main.py $url/main.py            # fetch 'main.py' from URL
-curl -o src/main.py $url/src/main.py    # fetch 'src/main.py'
-curl -o src/__init__.py $url/src/__init__.py
-
-mkdir docs                      # create the docs directory
-# fetch content of docs directory
-
-mkdir .vscode                   # create the .vscode directory
-# fetch content of .vscode directory
-
-find .                          # show project scaffold
-```
-
-Output shows the files of the project:
-
-```
-./docs
-./docs/conf.py
-./docs/index.rst
-./docs/makefile
-./main.py
-./makefile
-./requirements.txt
-./results.txt
-./src
-./src/calculator
-./src/__init__.py
-./src/main.py
-./tests
-./tests/calculator
-```
-
-<!-- 
-mkdir docs                      # fetch content of docs directory
-curl -o docs/conf.py   $url/docs/conf.py
-curl -o docs/index.rst $url/docs/index.rst
-curl -o docs/makefile  $url/docs/makefile
-
-mkdir .vscode                   # fetch content of .vscode directory
-curl -o .vscode/settings.json $url/.vscode/settings.json
-curl -o .vscode/launch.json   $url/.vscode/launch.json
-curl -o .vscode/launch-terminal.json $url/.vscode/launch-terminal.json
--->
-
-The diagram shows the project scaffold:
-
-```sh
-<workspace>             # workspace with Python projects
- |
- +-<py-fun>                 # project directory
- |  |
- |  +-<.vscode>                 # settings files for VSCode IDE
- |  |   +--settings.json
- |  |   +--launch.json
- |  |   +--launch-terminal.json
- |  |
- |  +--makefile                 # project build file
- |  +--requirements.txt         # installation dependencies
- |  +--setup.py                 # python build (create distributabe package)
- |  +--main.py                  # main python file, launches 'src/main.py'
- |  +--results.txt              # output with expected results
- |  |
- |  +-<src>                     # project source code
- |  |  +--__init.py__           # package file
- |  |  +--main.py               # actual main.py file that runs code
- |  |  +-<calculator>           # sub-directory for 'Calculator' source code
- |  |
- |  +-<tests>                   # project test code
- |  |  +-<calculator>           # sub-directory for 'Calculator' test code
- |  |
- |  +-<docs>                    # project documentation
- |  |  +--makefile              # documentation build file
- |  |  +--conf.py, index.rst    # other files in 'docs'
- |  |
-```
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 3. Build the Project
-
-```sh
-mvn compile
-find target
-
-mvn package
-ls -la target               # show: my-app-1.0-SNAPSHOT.jar
-
-# don't run .jar yet
-```
-
-Don't run the *.jar* yet sind it throws:
-*"no main manifest attribute, in target/my-app-1.0-SNAPSHOT.jar"*
-exception.
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 4. Create the *Calculator*
-
-Create a component *Calculator* in `src/calculator` such that it provides the
-indicated functions such that it can be imported and used in
-[*src/main.py*](src/main.py):
+Complete: `sum(_numbers)` using this approach:
 
 ```py
-from .calculator import Calculator
-
-def main():
-    # instantiate calculators
-    c1 = Calculator()
-    c2 = Calculator()
-    # 
-    print(f' 1: c1.add(1, 2)\t-> {c1.add(1, 2)}')
-    print(f' 2: c2.add(8, 3)\t-> {c2.add(8, 3)}')
+def sum(self, _numbers) -> int:
+    # your code
+    return #...
 ```
 
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 5. Run the *Calculator*
-
-Run the *Calculator* from the project directory:
-
-```sh
-make run                # run "the project" ('main.py' in the project directory)
-
-python main.py          # run 'main.py' in the project directory directly
-```
-
-Output shows the correct results:
-
-```
- 1: c1.add(1, 2)        -> 3
- 2: c2.add(8, 3)        -> 11
-```
-
-Remove the comment following calculation `2:` in [*src/main.py*](src/main.py):
+Remove comment from `run_choices` and run the program:
 
 ```py
-print(f' 3: c1.add("1", "1")\t-> {c1.add("1", "1")}')     # <-- uncomment
-# print(f' 4: c1.add("X", "V")\t-> {c1.add("X", "V")}')
-# print(f' 5: c2.factorize(99)\t-> {c1.factorize(99)}')
-```
-
-Run the code:
-
-```
- 1: c1.add(1, 2)        -> 3
- 2: c2.add(8, 3)        -> 11
- 3: c1.add("1", "1")    -> 11
-```
-
-Why does calculation `add("1", "1")` yields `11` and not as expected `2`?
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 6. Extend the *Calculator*
-
-Fix the problem such that the calculation before returns the expected value `2`.
-
-The following calculations show that *Calculator* has extended capabilities:
-
-- *Calculator* understands names of *single-digit* numbers in *English*,
-    *German*, *Spanish*, *Russian* (in *Cyrillic*) and *Chinese*.
-    
-    Examples:
-
-    - *c1.add("one", "four")* --> `5`,
-    - "drei" + 9 --> `12`, "четыре" + "eight" --> `12`,
-    - "三" (3) + "四" (4) --> 7.
-
-- *Calculator* also understands *Latin* *single-digit* numbers.
-
-    Examples:
-
-    - "I" + "II" -> `3`, "V" + "IV" -> `9`, "VIII" / "II" -> `4`.
-
-- Method *factorize( n )* returns prime factors of *n*.
-
-    Examples:
-
-    - 17: c2.factorize("три")       -> [3] (prime number),
-    - 18: c2.factorize("X")         -> [2, 5]
-    - 19: c2.factorize("ocho")      -> [2, 2, 2]
-    - 20: c2.factorize(3+5)         -> [2, 2, 2]
-    - 22: c2.factorize(1092)        -> [2, 2, 3, 7, 13]
-    - 23: c2.factorize(32768)       -> [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    - 24: c2.factorize(10952347)    -> [7, 23, 59, 1153]
-    - 25: c2.factorize(100000039)   -> [100000039] (prime number).
-
-Improve the *Calculator* such that it meets these extended capabilities.
-
-Validate your implementation by running all examples in [*src/main.py*](src/main.py).
-Enable the expressions list.
-
-```py
-# set True to run the examples from the expression list
-_run_list=True
-expr=[
-    'c1.add("1", "1.600")',         # 2.6
-    'c1.add("three", "1.600")',     # 4.6
-    'c1.add("cinco", "siete")',     # 12
-    'c1.add("семь", "восемь")',     # 15
-    'c1.add("III", "   VIII")',     # 11
-    'c1.add("三", "五")',            # 8
-    'c1.add("0", "X")',             # 10
-    'c2.add("ocho", "nueve")',      # 17
-    'c2.sub("ocho", "nueve")',      # -1
-    'c2.mul("ocho", "nueve")',      # 72
-    'c2.div("ocho", "dos")',        # 4.0
-    '',
-    'c2.factorize("три")',          # [3]
-    'c2.factorize("X")',            # [2, 5]
-    'c2.factorize("ocho")',         # [2, 2, 2]
-    'c2.factorize(3+5)',            # [2, 2, 2]
-    'c2.factorize(27)',             # [3, 3, 3]
-    'c2.factorize(1092)',           # [2, 2, 3, 7, 13]
-    'c2.factorize(32768)',          # [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    'c2.factorize(10952347)',       # [7, 23, 59, 1153]
-    'c2.factorize(100000039)',      # [100000039] (prime number)
-    '',
-] if _run_list else []
-```
-
-Correct results can also be found in [*results.txt*](results.txt).
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 7. Check Project into Local *git* Repository
-
-
-
-<!-- 
-Create local *git* repository and file
-[*.gitignore*](https://github.com/sgra64/se1-play/blob/main/.gitignore).
-
-```sh
-git init --initial-branch=main
-
-git commit --allow-empty -m "root commit (empty)"
-git tag root
-
-curl --output .gitignore \
-    "https://raw.githubusercontent.com/sgra64/se1-play/refs/heads/main/.gitignore"
-
-git add -f .gitignore && git commit -m "add .gitignore"
-
-git add pom.xml src
-git commit -m "add pom.xml src"
-``` -->
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 8. Push Project to Remote *git* Repository
-
-
-Find out how to push a locally created project into a remote *git* repository.
-
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
-&nbsp;
----
-### 9. Unit Tests
-
-to follow...
-
-<!-- 
-Create unit tests for method: *factorize(int n)* with tests:
-
-1. *regular cases:* n=1, n=2, n=3, n=4, n=27, n=65536, n=10952347, n=100000039 (prime number).
-
-1. *corner cases (valid):* n=0, n=2147483646 (MAX_INT-1), n=2147483647 (MAX_INT) -- corner cases test valid input boundaries.
-
-1. *error and exception cases (invalid):* n=-1, n=-10, n=-2147483648 -- exception cases test that the factorize(int n) method throw an IllegalArgumentException with message: negative argument.
-
-Create a new test class:
- -->
-
-
-<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- 
-&nbsp;
-
-### 10. Release
-
-Create release branch:
-
-```sh
-git switch main                     # switch to the 'main' branch
-git checkout -b release             # branch new 'release' branch off the 'main' branch
-git branch                          # show branches
-```
-
-Change GAV-coordinates in *pom.xml* for the *artifactId* from `my-app` to `factorizer`
-and for *version* from `1.0-SNAPSHOT` to `RELEASE-1.0.0`:
-```xml
-<groupId>de.factorizer</groupId>
-<artifactId>factorizer</artifactId>
-<version>RELEASE-1.0.0</version>
-```
-
-Commit the change to the release-branch:
-```sh
-git add . && git commit -m "update pom.xml, GAV to 'de.factorizer' 'RELEASE-1.0.0'"
-```
-
-The development is on branch `factorizer` and needs to be merged to the
-`release` branch.
-
-See the changes of the upcoming merge of the *factorizer* branch
-to the *release* branch:
-
-```sh
-git diff HEAD..factorizer --name-status
-```
-```
-M   pom.xml
-D   src/main/java/com/mycompany/app/App.java
-A   src/main/java/de/factorizer/App.java
-A   src/main/java/de/factorizer/Factorizer.java
-A   src/main/java/de/factorizer/FactorizerImpl.java
-R086src/test/java/com/mycompany/app/AppTest.java   src/test/java/de/factorizer/AppTest.java
-A   src/test/java/de/factorizer/FactorizerTests.java
-```
-
-Merge branch `factorizer` to the `release` branch:
-```sh
-git merge factorizer
-```
-```
-Auto-merging pom.xml
-CONFLICT (content): Merge conflict in pom.xml
-Automatic merge failed; fix conflicts and then commit the result.
-```
-
-Resolve the merge conflict and rebuild to verify everything works:
-```sh
-mvn clean package
-
-java -jar target/factorizer-RELEASE-1.0.0.jar 10 100 1000
-```
-```
-Error: Could not find or load main class com.mycompany.app.App
-Caused by: java.lang.ClassNotFoundException: com.mycompany.app.App
-```
-
-Fix the bug, rebuild and re-run:
-
-```sh
-# fix: <mainClass>de.factorizer.App</mainClass>
-mvn clean package
-
-java -jar target/factorizer-RELEASE-1.0.0.jar 31 961 29791 923521
-```
-```
-Hello Factorizer!
- - n=31 -> [31] (prime number)
- - n=961 -> [31, 31]
- - n=29791 -> [31, 31, 31]
- - n=923521 -> [31, 31, 31, 31]
-```
-
-Commit the open merge and tag the release commit:
-
-```sh
-git add pom.xml && git commit -m "merge branch factorizer"
-
-git tag "RELEASE-1.0.0"
-
-# show log of merged branch
-git log --oneline --all --graph
-```
-```
-*   ef40d7a (HEAD -> release, tag: RELEASE-1.0.0) merge branch factorizer
-|\
-| * cba7669 (factorizer) add FactorizerTests
-| * b2ac291 refactoring groupId: "de.factorizer"
-| * 2fe6eeb add Factorizer
-* | 39fe1b8 update pom.xml, GAV to 'de.factorizer' 'RELEASE-1.0.0'
-|/
-* 52c981d (main) add pom.xml src
-* b97a250 add .gitignore
-* fb58d32 (tag: root) root commit (empty)
-```
-
-<img src="https://raw.githubusercontent.com/sgra64/mvn-fun/refs/heads/markup/img/git-log-after-merge.png" width="600"/>
-
-&nbsp;
-
-Double-check the code builds cleanly and works for the release:
-
-```sh
-mvn clean compile           # clean rebuild before running the code
-
-mvn test                    # run unit tests -> BUILD SUCCESS
-
-java de.factorizer.App 3 27 1092 65536 10952347 100000039
+    run_choices = [
+        1,      # Challenge 1, Simple recursion: sum numbers
+        ...
+    ]
 ```
 
 Output:
 
 ```
-Hello Factors!
- - n=3 -> [3] (prime number)
- - n=27 -> [3, 3, 3]
- - n=1092 -> [2, 2, 3, 7, 13]
- - n=65536 -> [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
- - n=10952347 -> [7, 23, 59, 1153]
- - n=100000039 -> [100000039] (prime number)
+n1.numbers: [9, 4, 8, 10, 2, 4, 8, 3, 14, 4, 8]
+sum(n1.numbers): 74
 ```
 
-Commit with message `"changed version in pom.xml to: RELEASE-1.0.0"` to the *release*-branch
-and tag the commit with `RELEASE-1.0.0`.
+Answer questions:
 
-Push branches:
+  1. How many time is the *"first element"* stored?
+    How much memory is used for applying the function to a list of *n* numbers?
 
-- `main`,
+  1. What is the run-time estimate for *sum()* given a list of *n* numbers?
 
-- `factorizer`,
+  1. How many *stack-frames* are used for a list of *n* numbers?
 
-- `release`
+(2 Pts)
 
-to a remote repository: `mvn-fun` you can create at
-[*BHT GitLab*](https://gitlab.bht-berlin.de/)
-or another Git service such as
-[*GitHub*](https://github.com/). -->
+
+&nbsp;
+### 2.) Challenge: Fibonacci numbers
+
+[Fibonacci numbers](https://en.wikipedia.org/wiki/Fibonacci_number) were first
+described in Indian mathematics as early as 200 BC in works by *Pingala* on
+enumerating possible patterns of Sanskrit poetry formed from syllables of two lengths.
+
+Italian mathematician *Leonardo of Pisa*, later known as
+*[Fibonacci](https://en.wikipedia.org/wiki/Fibonacci)*,
+introduced the sequence to Western European mathematics in his 1202 book
+*[Liber Abaci](https://en.wikipedia.org/wiki/Liber_Abaci)*.
+
+Numbers of the *Fibonacci sequence* are defined as: *fib(0): 0*, *fib(1): 1*, *...*
+and each following number is the sum of the two preceding numbers.
+
+Fibonacci numbers are widely found in *nature*, *science*, *social behaviors* of
+populations and *arts*, e.g. they form the basis of the
+[Golden Ratio](https://www.adobe.com/creativecloud/design/discover/golden-ratio.html),
+which is widely used in *painting* and *photography*, see also this
+[1:32min](https://www.youtube.com/watch?v=v6PTrc0z4w4) video.
+
+<img src="../markup/img/fibonacci.jpg" alt="drawing" width="640"/>
+<!-- ![image](../markup/img/fibonacci.jpg) -->
+
+&nbsp;
+
+Complete functions `fib(n)` and `fib_gen(n)`.
+
+```py
+def fib(self, _n) -> int:
+    # return value of n-th Fibonacci number
+    return #...
+
+def fib_gen(self, _n):
+    # return a generator object that yields two lists, one with n and the
+    # other with corresponding fib(n)
+    yield #...
+```
+
+Remove comment from `run_choices` and run the program:
+
+```py
+    run_choices = [
+        1,      # Challenge 1, Simple recursion: sum numbers
+        2,      # Challenge 2, Fibonacci numbers
+        ...
+    ]
+```
+
+Output:
+
+```
+n:      [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+fib(n): [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765]
+```
+
+Answer questions:
+
+  1. Explain the concept of a generator in Python.
+
+  1. Why can't `fib(60)` or `fib(90)` be computed recursively?
+
+  1. What is the more limiting constraint: memory use or needed run time?
+        ```py
+        n = 30
+        print(f'fib({n}): {n1.fib(n)}')
+        n = 60
+        print(f'fib({n}): {n1.fib(n)}')     # ??
+        n = 90
+        print(f'fib({n}): {n1.fib(n)}')     # ??
+        ```
+
+Understand the problem and use a technique called
+[memoization](https://stackoverflow.com/questions/7875380/recursive-fibonacci-memoization)
+to make the solution work for *n=60* and *n=90* - still recursively (!).
+
+Remove comments `#21` and `#22` from `run_choices` and run the program:
+
+Output:
+
+```
+fib(30): 832040
+fib(60): 1548008755920
+fib(90): 2880067194370816120
+```
+
+(2 Pts)
+
+
+&nbsp;
+### 3.) Challenge: Permutation
+
+[Permutation](https://en.wikipedia.org/wiki/Permutation) is a list of all
+arrangements of elements.
+
+For example:
+```py
+perm([1, 2, 3]) -> [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+
+perm([]) -> [[]]
+perm([1]) -> [[1]]
+perm([1, 2]) -> [[1, 2], [2, 1]]
+perm([1, 2, 3]) -> [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+perm([1, 2, 3, 4]) -> [[1, 2, 3, 4], [1, 2, 4, 3], ... [4, 3, 1, 2], [4, 3, 2, 1]]
+```
+Find a pattern how numbers are arranged for `perm([1, 2])` and `perm([1, 2, 3])`
+and adapt it for `perm([1, 2, 3, 4])` to understand the algorithm.
+
+Writing non-recursive code for that algorithm can be difficult, but it fits
+well with the recursive sub-problen approach, which is elegant with the
+four steps:
+1. Return solutions for trivial cases: `[]`, `[1]`, `[1, 2]`.
+1. Split the problem by removing the first number `n1` from the list leaving `r` as
+    remaining list (sub-problem).
+1. Invoke `perm(r)` recursively on the remaining list.
+1. Combine the result returned from `perm(r)` by adding `n1` to each element.
+
+```py
+def perm(self, _numbers) -> list:
+    res=[]  # collect result
+    # code...
+    # 1. Return solutions for trivial cases: `[]`, `[1]`, `[1, 2]`.
+    # 2. Split the problem by removing the first number `n1` from the list
+    #    leaving `r` as remaining list (sub-problem).
+    # 3. Invoke `perm(r)` recursively on the remaining list.
+    # 4. Combine the result by adding `n1` to each returned element from `perm(r)`.
+    #
+    return res
+
+lst = [1, 2, 3]
+perm = n1.perm(lst)
+print(f'perm({lst}) -> {perm}')
+
+lst = [1, 2, 3, 4]
+perm = n1.perm(lst)
+print(f'perm({lst}) -> {perm}')
+```
+
+Remove comment `#3` from `run_choices` and run the program:
+
+Output:
+
+```
+perm([1, 2, 3]) -> [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+perm([1, 2, 3, 4]) -> [[1, 2, 3, 4], [1, 2, 4, 3], ... [4, 3, 1, 2], [4, 3, 2, 1]]
+```
+
+Answer questions:
+
+  - With a rising length of the input list, how does the number of permutations grow?
+
+(2 Pts)
+
+
+&nbsp;
+### 4.) Challenge: Powerset
+
+[Powerset](https://en.wikipedia.org/wiki/Powerset) is a list of all
+subsets of elements including the empty set.
+
+For example:
+```py
+pset([1, 2, 3]) -> [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
+```
+Undertstand the pattern and complete function `pset()`.
+
+```py
+def pset(self, _numbers) -> list:
+    res=[]  # collect result
+    # code...
+    # 1. Return solutions for trivial cases: `[]`, `[1]`, `[1, 2]`.
+    # 2. Split the problem by removing the first number `n1` from the list
+    #    leaving `r` as remaining list (sub-problem).
+    # 3. Invoke `pset(r)` recursively on the remaining list.
+    # 4. Combine the result with the first element.
+    #
+    return res
+
+lst = [1, 2, 3]
+pset = n1.pset(lst)
+print(f'pset({lst}) -> {pset}')
+```
+
+Remove comment `#4` from `run_choices` and run the program:
+
+Output:
+
+```py
+pset([1, 2, 3]) -> [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
+```
+
+Answer questions:
+
+  - With a rising length of the input list, how does the size of the Powerset grow?
+
+(2 Pts)
+
+
+&nbsp;
+### 5.) Challenge: Find Matching Pairs
+
+Write three functions to `find` elements in a list.
+
+The first function to `find` elements that match a boolean `match_func`.
+
+A second function `find_adjacent` that finds all indexes of adjacent pairs
+of numbers.
+
+The third function `find_pairs` that finds all pairs of numbers (not necessarily
+adjacent) with the sum equal to `n`. For example, `n=12` can be combined from
+the input list with pairs: `[3, 9], [4, 8], [2, 10]`.
+
+```py
+def find(self, _numbers, match_func) -> list:
+    res = []    # code...
+    return res
+
+
+def find_adjacent(self, pair, _numbers) -> list:
+    res = []    # code...
+    return res
+
+
+def find_pairs(self, n, _numbers) -> list:
+    res = []    # code...
+    return res
+
+
+lst = [9, 4, 8, 10, 2, 4, 8, 3, 14, 4, 8]   # input list
+#
+div3 = n1.find(lst, match_func=lambda n : n % 3 == 0)
+print(f'find numbers divisible by 3: {div3}')
+#
+p = [4, 8]  # find all indexes of adjacent numbers [4, 8]
+adj = n1.find_adjacent(p, lst)
+print(f'find_adjacent({p}, list): {adj}')
+#
+n = 12  # find all pairs from the input list that add to n
+pairs = n1.find_pairs(n, lst)
+print(f'find_pairs({n}, list) -> {pairs}')
+```
+
+Remove comments `#5`, `#51` and  `#52` from `run_choices` and run the program:
+
+Output:
+
+```
+find numbers divisible by 3: [9, 3]
+
+find_adjacent([4, 8], list): [1, 5, 9]
+
+find_pairs(12, list) -> [[3, 9], [4, 8], [2, 10]]
+```
+
+Answer questions:
+
+  - With a rising length of the input list, how many steps are needed to
+    complete each function in the best and worst case and on average?
+
+    | function         | answers     |
+    | ---------------- | ----------- |
+    | `find`           | best case: ______, worst case: ______, average: ______ steps.  |
+    | `find_adjacent`  | best case: ______, worst case: ______, average: ______ steps.  |
+    | `find_pairs`       | best case: ______, worst case: ______, average: ______ steps.  |
+
+(3 Pts)
+
+
+&nbsp;
+### 6.) Challenge: Combinatorial Problem of Finding Numbers
+
+`find_all_sums` is a function that returns any combination of numbers from the
+input list that add to `n`. For example, `n=14` can be combined from an
+input list: `[8, 10, 2, 14, 4]` by combinations: `[4, 8, 2], [4, 10], [14]`.
+
+A first approach to the problem is to understand the nature of possible
+combinations from the input list. If all those combinations could be
+generated, each could be tested whether their elements add to `n` and if,
+collect them for the final result.
+
+The order of numbers in solutions is not relevant (summation is commutative).
+Duplicate solutions with same numbers, but in different order need be to removed.
+
+```py
+def find_all_sums(self, n, _numbers) -> list:
+    res = []    # code...
+    return res
+
+
+lst = [8, 10, 2, 14, 4]     # input list
+n = 14
+all = n1.find_all_sums(n, lst)
+print(f'find_all_sums({n}, lst) -> {all}')
+```
+
+Output:
+```py
+find_all_sums(14, lst) -> [[4, 8, 2], [4, 10], [14]]
+```
+
+Test your solution with a larger input set:
+```py
+lst = [     # input list
+    260, 720, 225, 179, 101, 767, 167, 200, 157, 289,
+    318, 303, 153, 290, 201, 594, 457, 607, 592, 246,
+]
+n = 469
+all = n1.find_all_sums(n, lst)
+print(f'find_all_sums({n}, lst) -> {all}')
+```
+
+Remove comments `#6`, and  `#61` from `run_choices` and run the program:
+
+Output:
+
+```
+find_all_sums(469, lst) -> [[179, 290], [101, 167, 201]]
+```
+
+Answer questions:
+
+  - With a rising length of the input list, how does the number of possible
+    solutuions rise that must be tested?
+
+(2 Pts)
+
+
+&nbsp;
+### 7.) Challenge: Hard Problem of Finding Numbers
+
+Larger data sets can no longer be solved *"brute force"* by exploring all possible
+2^n combinations.
+
+Find a solution using a recursive approach exploring a decision tree or
+with tabulation.
+
+```py
+lst = [     # input list
+    260, 720, 225, 179, 101, 767, 167, 200, 157, 289,
+    318, 303, 153, 290, 201, 594, 457, 607, 592, 246,
+    132, 135, 584, 432, 591, 204, 417, 405, 362, 658,
+    136, 751, 583, 536, 293, 493, 431, 780, 563, 703,
+    400, 618, 397, 320, 513, 708, 319, 317, 685, 347,
+    758, 439, 145, 378, 158, 384, 551, 110, 408, 648,
+    847, 498,  50,  19,     # 64 numbers
+]
+n = 469
+all = n1.find_all_sums(n, lst)
+for i, s in enumerate(all):
+    print(f' - {i+1:2}: sum({sum(s)}) -> {s}')
+```
+
+Sort output by lenght of solution (use length as primary and numeric value
+of first element as secondary criteria).
+
+Remove comment `#7` if you tackled the challenge and run the program:
+
+Output:
+
+```
+  1: sum(469) -> [290, 179]
+  2: sum(469) -> [19, 157, 293]
+  3: sum(469) -> [19, 246, 204]
+  4: sum(469) -> [19, 318, 132]
+  5: sum(469) -> [19, 400, 50]
+  6: sum(469) -> [50, 101, 318]
+  7: sum(469) -> [110, 201, 158]
+  8: sum(469) -> [136, 201, 132]
+  9: sum(469) -> [145, 167, 157]
+ 10: sum(469) -> [158, 179, 132]
+ 11: sum(469) -> [201, 101, 167]
+ 12: sum(469) -> [19, 101, 204, 145]
+ 13: sum(469) -> [19, 157, 135, 158]
+ 14: sum(469) -> [19, 179, 135, 136]
+ 15: sum(469) -> [19, 204, 136, 110]
+ 16: sum(469) -> [19, 290, 110, 50]
+ 17: sum(469) -> [19, 101, 167, 132, 50]
+ 18: sum(469) -> [19, 132, 158, 110, 50]
+```
+
+( +4 Extra Pts)
