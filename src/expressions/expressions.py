@@ -57,7 +57,7 @@ class Expressions:
         self.j = sorted({x**2 for x in self.numbers})
 
         # k) initialize with "ODD_LIST", "EVEN_LIST" or "EMPTY_LIST" depending on numbers length
-        self.k = "NEITHER" if self.a == 0 else "ODD_LIST" if self.a%2==1 else "EVEN_LIST"
+        self.k = "EMPTY_LIST" if self.a == 0 else "ODD_LIST" if self.a%2==1 else "EVEN_LIST"
 
 
     def print_results(self):

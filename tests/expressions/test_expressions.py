@@ -220,3 +220,8 @@ class TestCase_k_classifyClass_as_odd_even_empty(Test_case_k):
         td.assertEqual(td.ut6.k, "EVEN_LIST")
         td.assertEqual(td.ut7.k, "ODD_LIST")
         td.assertEqual(td.ut8.k, "EMPTY_LIST")
+
+
+if __name__ == "__main__":
+    import unittest
+    unittest.main(verbosity=2)
