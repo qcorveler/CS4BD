@@ -68,10 +68,10 @@ class Recursion:
         # base case
         if not _numbers :
             return res
-        if _numbers == [1] :
-            return [1]
-        if _numbers == [1,2] :
-            return [[1,2], [2,1]]
+        if len(_numbers) == 1 :
+            return [_numbers]
+        if len(_numbers) == 2 :
+            return [[_numbers[0], _numbers[1]], [_numbers[1], _numbers[0]]]
         
         last_number = _numbers[-1]
         reduced = _numbers[:-1]
@@ -90,10 +90,10 @@ class Recursion:
         """
         if _numbers == [] :
             return []
-        if _numbers == [1] :
-            return [[], [1]]
-        if _numbers == [1,2]:
-            return [[], [1], [2], [1,2]]
+        if len(_numbers) == 1 :
+            return [[], [_numbers[0]]]
+        if len(_numbers) == 2:
+            return [[], [_numbers[0]], [_numbers[1]], [_numbers[0], _numbers[1]]]
         
         last_number = _numbers[-1]
         reduced = _numbers[:-1]
@@ -108,16 +108,33 @@ class Recursion:
         """
         Return list of elements n for which match_func(n) evaluates True.
         """
-        # your code
-        return []
+        if len(_numbers) == 0 : 
+            return []
+        elif len(_numbers) == 1 :
+            if match_func(_numbers[0]) :
+                return [_numbers[0]]
+            else :
+                return []
+        else : 
+            first_number = _numbers[0]
+            reduced = _numbers[1:]
+            res = self.find(reduced, match_func)
+            if match_func(first_number) :
+                return [first_number] + res
+            else :
+                return res
 
 
     def find_adjacent(self, pair, _numbers, _i=0) -> list:
         """
         Return list of indexes of adjacent numbers in _numbers.
         """
-        # your code
-        return []
+        if len(_numbers) < 2 :
+            return []
+        if _numbers[0] == pair[0] and _numbers[1] == pair[1] :
+            return [_i] + self.find_adjacent(pair, _numbers[1:], _i+1)
+        else :
+            return self.find_adjacent(pair, _numbers[1:], _i+1)
 
 
     def find_pairs(self, n, _numbers) -> list:
@@ -125,18 +142,58 @@ class Recursion:
         Return list of pairs from _numbers that add to n,
         any pair, any order, no duplicates.
         """
-        # your code
-        return []
+        if (len(_numbers) == 0) :
+            return []
+        else : 
+            first_number = _numbers[0]
+            reduced = _numbers[1:]
+            res = self.find_pairs(n, reduced)
+            for number in reduced :
+                if first_number + number == n :
+                    pair = [first_number, number]
+                    pair.sort()
+                    if pair not in res :
+                        res.append(pair)
+            return res
 
 
-    def find_all_sums(self, n, _numbers) -> list:
+    def find_all_sums_bad(self, n, _numbers) -> list:
         """
         Return all combinations of numbers in _numbers that add to n,
         (any pair, any order, no duplicates).
         """
-        # your code
-        return []
+        res = []
+        powerset = self.pset(_numbers)
+        for subset in powerset :
+            if sum(subset) == n :
+                res.append(subset)
+        return res
 
+    def find_all_sums(self, n, _numbers) -> list:
+        res = []
+        ordered_numbers = sorted(_numbers)
+
+        if len(_numbers) == 0 :
+            return res
+        first_number = ordered_numbers[0]
+        reduced = ordered_numbers[1:]
+
+        # first number in the sum
+        if first_number == n :
+            res.append([first_number])
+        elif first_number < n :
+            sub_sums = self.find_all_sums(n - first_number, reduced)
+            for subset in sub_sums :
+                new_subset = [first_number] + subset
+                res.append(new_subset)
+        # If first_number > n, we stop the research as the list is ordered
+
+        # first number not in the sum
+        sub_sums = self.find_all_sums(n, reduced)
+        for subset in sub_sums :
+            if subset not in res :
+                res.append(subset)
+        return res
 
     def __init__(self, _numbers=numbers):
         """
@@ -151,12 +208,12 @@ class Recursion:
         22,     # Challenge 2.2, memoization, fib(60), fib(90)
         3,      # Challenge 3, Permutation
         4,      # Challenge 4, Powerset
-        # 5,      # Challenge 5, Finding matches, find()
-        # 51,     # Challenge 5.1, find_adjacent() pairs
-        # 52,     # Challenge 5.2, find_pairs() that add to n
-        # 6,      # Challenge 6, Find all combinations that add to n
-        # 61,     # Challenge 6.1, Find all in medium set
-        # 7       # Challenge 7, Hard problem finding numbers (extra points)
+        5,      # Challenge 5, Finding matches, find()
+        51,     # Challenge 5.1, find_adjacent() pairs
+        52,     # Challenge 5.2, find_pairs() that add to n
+        6,      # Challenge 6, Find all combinations that add to n
+        61,     # Challenge 6.1, Find all in medium set
+        7       # Challenge 7, Hard problem finding numbers (extra points)
     ]
 
 
